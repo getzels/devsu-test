@@ -3,6 +3,7 @@
 # Initialize variables
 BUILD_BACKEND=false
 START_DOCKER=false
+STOP_DOCKER=false
 HOST="your_remote_server"
 USER="your_username"
 SSH_KEY_PATH="/path/to/your/private/key"
@@ -16,6 +17,7 @@ usage() {
   echo "Options:"
   echo "  --build-backend     Only build the Maven project."
   echo "  --start-docker      Only start the Docker Compose setup."
+  echo "  --stop-docker      stop the Docker Compose setup."
   echo "  --build-frontend    Only build the Angular frontend."
   echo "  --help              Display this help message."
 }
@@ -26,6 +28,7 @@ while [[ "$#" -gt 0 ]]; do
         --build-backend) BUILD_BACKEND=true ;;
         --build-frontend) BUILD_FRONTEND=true ;;
         --start-docker) START_DOCKER=true ;;
+        --stop-docker) STOP_DOCKER=true;;
     esac
     shift
 done
@@ -41,12 +44,18 @@ fi
 if [ "$BUILD_FRONTEND" = true ]; then
     echo "Building Angular frontend..."
     cd "../pichincha-fe"
-    npm install
-    npm run build
+    docker build --no-cache -t devsu/pichincha-fe:latest .
 fi
 
 # Start Docker Compose if flag is set
 if [ "$START_DOCKER" = true ]; then
+    echo "Starting Docker Compose..."
+    cd "$BUILD_DIRECTORY"
+    docker-compose -f "$DOCKER_COMPOSE_FILE" up --build -d
+fi
+
+# Start Docker Compose if flag is set
+if [ "$STOP_DOCKER" = true ]; then
     echo "Starting Docker Compose..."
     cd "$BUILD_DIRECTORY"
     docker-compose -f "$DOCKER_COMPOSE_FILE" up --build -d

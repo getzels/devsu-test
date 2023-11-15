@@ -13,9 +13,7 @@ services:
       - db
 
   frontend:
-    build:
-      context: ./path/to/frontend
-      dockerfile: ../pichincha-fe/Dockerfile
+    image: devsu/pichincha-fe:latest
     ports:
       - "80:80"
     depends_on:
