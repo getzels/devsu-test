@@ -16,6 +16,7 @@ usage() {
   echo "Options:"
   echo "  --build-backend     Only build the Maven project."
   echo "  --start-docker      Only start the Docker Compose setup."
+  echo "  --build-frontend    Only build the Angular frontend."
   echo "  --help              Display this help message."
 }
 
@@ -23,9 +24,8 @@ usage() {
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --build-backend) BUILD_BACKEND=true ;;
+        --build-frontend) BUILD_FRONTEND=true ;;
         --start-docker) START_DOCKER=true ;;
-        --help) usage; exit 0 ;;
-        *) echo "Unknown option: $1"; usage; exit 1 ;;
     esac
     shift
 done
@@ -35,6 +35,14 @@ if [ "$BUILD_BACKEND" = true ]; then
     echo "Building Maven project..."
       cd "$BUILD_DIRECTORY" && cd "../pichincha-api"
       mvn clean package
+fi
+
+# Build the Angular frontend if flag is set
+if [ "$BUILD_FRONTEND" = true ]; then
+    echo "Building Angular frontend..."
+    cd "../pichincha-fe"
+    npm install
+    npm run build
 fi
 
 # Start Docker Compose if flag is set
